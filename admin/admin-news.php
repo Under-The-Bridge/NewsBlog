@@ -72,7 +72,7 @@ $categories = mysqli_query($conn, "select * from Categories");
             width: 100%;
         }
 
-        .card-body * {
+        .card-body {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
