@@ -5,7 +5,7 @@ $oldpass = $_POST["oldpass"] ?? false;
 $newpass = $_POST["newpass"] ?? false;
 
 if($oldpass != $newpass){
-    $user = $_COOKIE["auth"];
+    $user = $_SESSION["auth"];
     $query = mysqli_fetch_assoc(mysqli_query($conn, "select * from Users where username = '$user'"));
     $user = $query["username"];
     $password = $query["password"];

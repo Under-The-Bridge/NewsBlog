@@ -1,8 +1,8 @@
 <?php
-require "server/connection-db.php";
-$user = $_SESSION["auth"] ?? false;
-
-$categories = mysqli_fetch_all(mysqli_query($conn, "select * from Categories"));
+require "../server/connection-db.php";
+$news = $_GET["news_id"] ?? false;
+$news = mysqli_fetch_assoc(mysqli_query($conn, "select * from News where news_id = $news"));
+$categories = mysqli_fetch_all(mysqli_query($conn,"select * from Categories"));
 ?>
 
 <!DOCTYPE html>
@@ -21,19 +21,14 @@ $categories = mysqli_fetch_all(mysqli_query($conn, "select * from Categories"));
 </head>
 
 <body>
-    <?php
-    if ($user == "admin") {
-        include "components/admin-header.php";
-    } else {
-        include "components/header.php";
-    }
-    ?>
+<?php include "../components/admin-header.php"?>
     <main class="container">
-        <h1>Создать пост</h1>
-        <form method="post" action="/server/news-db.php" enctype="multipart/form-data">
+        <h1>Редактировать пост</h1>
+        <form method="post" action="admin-edit-news-db.php" enctype="multipart/form-data">
+            <input type="text" name="news_id" value="<?=$news['news_id']?>" hidden>
             <div class="mb-3">
                 <label for="title" class="form-label">Название</label>
-                <input type="text" class="form-control" id="title" name="title" maxlength="50" required>
+                <input type="text" class="form-control" id="title" name="title" maxlength="50" required value="<?=$news["title"]?>">
             </div>
             <div class="mb-3">
                 <label for="img" class="form-label">Изображение</label>
@@ -42,15 +37,14 @@ $categories = mysqli_fetch_all(mysqli_query($conn, "select * from Categories"));
             <div class="mb-3">
                 <label for="category" class="form-label">Выбрать категорию</label>
                 <select name="category" id="category">
-                    <?php foreach ($categories as $category) { ?>
-                        <option value="<?= $category[0] ?>"><?= $category[1] ?></option>
-                    <?php } ?>
+                    <?php foreach ($categories as $category) {?>
+                        <option value="<?=$category[0]?>" <?=$category[0] = $news["category_id"]?>><?=$category[1]?></option>
+                    <?php }?>
                 </select>
             </div>
             <div class="mb-3">
                 <label for="content" class="form-label">Содержание</label>
-                <textarea type="text" class="form-control" id="content" name="content" maxlength="1000"
-                    required></textarea>
+                <textarea type="text" class="form-control" id="content" name="content" maxlength="1000" required><?=$news["content"]?></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Выложить</button>
         </form>

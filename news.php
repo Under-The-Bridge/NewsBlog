@@ -3,12 +3,12 @@ require "server/connection-db.php";
 
 $news_id = $_GET["news_id"];
 
-$user = $_COOKIE["auth"] ?? false;
+$user = $_SESSION["auth"] ?? false;
 
 $query = mysqli_fetch_assoc(mysqli_query($conn, "select * from News where news_id = $news_id"));
 $comm = mysqli_query($conn, "select * from Comments join Users on Comments.user_id = Users.user_id where news_id = $news_id and comment_status = 'Активен'");
-$comments = mysqli_fetch_all($comm, MYSQLI_ASSOC)
-    ?>
+$comments = mysqli_fetch_all($comm, MYSQLI_ASSOC);
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -57,7 +57,7 @@ $comments = mysqli_fetch_all($comm, MYSQLI_ASSOC)
             width: 100%;
         }
 
-        .comments{
+        .comments {
             list-style-type: none;
             padding: 0;
         }
@@ -67,48 +67,30 @@ $comments = mysqli_fetch_all($comm, MYSQLI_ASSOC)
             font-size: 20px;
             border-bottom: 1px lightgray solid;
         }
+
+        a:not(:hover) {
+            text-decoration: none;
+        }
+
+        .comment-date {
+            font-size: 14px;
+            color: gray;
+        }
     </style>
 </head>
 
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">Новостной портал Пингвины</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <?php if (!isset($_COOKIE["auth"])) { ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/auth.php">Вход</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/registration.php">Регистрация</a>
-                            </li>
-                        <?php } else { ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/profile.php">Профиль</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/server/logout.php">Выйти</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/createnews.php">Создать пост</a>
-                            </li>
-                        <?php } ?>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
+    <?php
+    if ($user == "admin") {
+        include "components/admin-header.php";
+    } else {
+        include "components/header.php";
+    }
+    ?>
     <main>
         <div class="content">
             <h1><?= $query["title"] ?></h1>
-            <img src="photo_5456276395450824013_x.jpg" alt="">
+            <img src="source/<?= $query["image"] ?>" alt="">
             <p><?= date_format(new DateTime($query["publish_date"]), "Y.m.d H:i") ?></p>
             <!-- <div class="content-text"> -->
             <h4><?= $query["content"] ?></h4>
@@ -133,6 +115,7 @@ $comments = mysqli_fetch_all($comm, MYSQLI_ASSOC)
                                 <a
                                     href="server/comment-db.php?delete=1&comment_id=<?= $comment["comment_id"] ?>&news=<?= $news_id ?>">Удалить</a>
                             <?php } ?>
+                            <div class="comment-date"><?= $comment["comment_date"] ?></div>
                         </li>
                     <?php } ?>
                 </ul>

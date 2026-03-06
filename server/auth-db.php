@@ -8,8 +8,13 @@ $checkuser = mysqli_query($conn, "select * from Users where email = '$user' or u
 if (mysqli_num_rows($checkuser) > 0) {
     $user = mysqli_fetch_assoc($checkuser);
     if ($user["password"] == $password) {
-        setcookie("auth", $user["username"], time() + 3600, "/");
-        header("Location: /");
+        $_SESSION["auth"] = $user["username"];
+        // setcookie("auth", $user["username"], time() + 3600, "/");
+        if ($user["username"] == "admin") {
+            header("Location: ../admin/admin-news.php");
+        } else {
+            header("Location: /");
+        }
     } else {
         echo_error("Неверный пароль", "/auth.php");
         // echo '<div class="alert alert-danger" role="alert">Неверный пароль! <a class="alert-link" href="/auth.php">Вернутся</a></div>';

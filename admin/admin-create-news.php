@@ -1,8 +1,7 @@
 <?php
-require "server/connection-db.php";
-$user = $_SESSION["auth"] ?? false;
+require "../server/connection-db.php";
 
-$categories = mysqli_fetch_all(mysqli_query($conn, "select * from Categories"));
+$categories = mysqli_fetch_all(mysqli_query($conn,"select * from Categories"));
 ?>
 
 <!DOCTYPE html>
@@ -21,13 +20,7 @@ $categories = mysqli_fetch_all(mysqli_query($conn, "select * from Categories"));
 </head>
 
 <body>
-    <?php
-    if ($user == "admin") {
-        include "components/admin-header.php";
-    } else {
-        include "components/header.php";
-    }
-    ?>
+    <?php include "../components/admin-header.php"?>
     <main class="container">
         <h1>Создать пост</h1>
         <form method="post" action="/server/news-db.php" enctype="multipart/form-data">
@@ -42,15 +35,14 @@ $categories = mysqli_fetch_all(mysqli_query($conn, "select * from Categories"));
             <div class="mb-3">
                 <label for="category" class="form-label">Выбрать категорию</label>
                 <select name="category" id="category">
-                    <?php foreach ($categories as $category) { ?>
-                        <option value="<?= $category[0] ?>"><?= $category[1] ?></option>
-                    <?php } ?>
+                    <?php foreach ($categories as $category) {?>
+                        <option value="<?=$category[0]?>"><?=$category[1]?></option>
+                    <?php }?>
                 </select>
             </div>
             <div class="mb-3">
                 <label for="content" class="form-label">Содержание</label>
-                <textarea type="text" class="form-control" id="content" name="content" maxlength="1000"
-                    required></textarea>
+                <textarea type="text" class="form-control" id="content" name="content" maxlength="1000" required></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Выложить</button>
         </form>

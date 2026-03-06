@@ -3,7 +3,7 @@ require "connection-db.php";
 
 $news = $_GET["news"] ?? false;
 
-$user = $_COOKIE["auth"] ?? false;
+$user = $_SESSION["auth"] ?? false;
 
 if (!$user) {
     echo_error("Войдите в профиль", "/news.php?news_id=$news");
